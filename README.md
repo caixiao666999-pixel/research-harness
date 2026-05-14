@@ -44,19 +44,35 @@ AI 每次回复开头都会声明当前阶段：
 
 ```
 .
-├── CLAUDE.md / AGENTS.md   # AI 启动指令（两份内容一致）
-├── METHOD.md               # 研究目标 + 技术路线 + 修订历史
-├── STATUS.md               # 当前阶段 + 活跃实验
-├── src/                    # 跨实验复用的代码
+├── CLAUDE.md / AGENTS.md   # AI 启动指令（两份内容必须完全一致；pre-commit hook 校验）
+├── METHOD.md               # 研究目标 + 技术路线 + 修订历史（append-only）
+├── STATUS.md               # 当前阶段 + 活跃实验（可多个） + blocker
+├── FINDINGS.md             # 跨实验沉淀的规律性发现（append-only）
+├── src/                    # 跨实验复用的代码（仅当代码已被 ≥2 个实验复用才提升）
 ├── experiments/            # 所有实验，按日期命名
 │   └── YYYY-MM-DD-name/
-│       ├── REPORT.md       # ✅ git
-│       ├── plan.md         # ✅ git
+│       ├── REPORT.md       # ✅ git（含预测对比、复现配方、负面结果标记）
+│       ├── plan.md         # ✅ git（含 pre-registration 预测段，冻结）
 │       ├── code/           # ✅ git
 │       ├── data/           # ❌ 本地保留
 │       └── results/        # ❌ 本地保留
 ├── archive/                # 大结构改动时整体归档旧版本
-└── templates/              # REPORT 和实验目录的模板
+├── templates/              # REPORT 和实验目录的模板
+├── scripts/                # 维护脚本（如 check_docs_sync.py）
+└── .githooks/              # 仓库级 git hooks（需手动启用，见下）
+```
+
+### 启用 pre-commit hook（首次克隆后做一次）
+
+```bash
+git config core.hooksPath .githooks
+```
+
+启用后，每次 commit 会自动校验 `CLAUDE.md` 和 `AGENTS.md` 是否同步。
+若没启用 hook，可手动运行：
+
+```bash
+python scripts/check_docs_sync.py
 ```
 
 ## 工作流示例
@@ -64,9 +80,14 @@ AI 每次回复开头都会声明当前阶段：
 1. **写 METHOD.md**：填写目标、技术路线、评估方式
 2. **告诉 AI**："请帮我规划第一次实验" → AI 进入 `[planning]`
 3. **批准实验计划** → AI 进入 `[executing]`，在 `experiments/2026-05-14-xxx/` 下编码
-4. **实验跑完** → AI 进入 `[reporting]`，写 REPORT.md，进入 `[awaiting-review]`
-5. **你评估报告**：满意 → 进入下一轮规划；不满意 → AI 进入 `[revising]` 更新 METHOD.md
-6. **如果是结构性改动**：AI 会询问是否归档当前 src/ 到 archive/
+   - plan.md 的"实验前预测"段在开跑前填写并**冻结**（避免 HARKing）
+4. **实验跑完** → AI 进入 `[reporting]`，写 REPORT.md（含预测对比、复现配方、负面结果标记），进入 `[awaiting-review]`
+5. **你评估报告**：
+   - 满意 → 进入下一轮规划
+   - 发现跨实验规律 → AI 会问是否追加到 `FINDINGS.md`
+   - 需要调整方案 → AI 进入 `[revising]`，**追加**新版本到 METHOD.md
+6. **如果 AI 在执行阶段卡住**：会切到 `[awaiting-review]` 并在 STATUS.md 写明 blocker，等你回应
+7. **如果是结构性改动**：AI 会询问是否归档当前 src/ 到 archive/
 
 ## Git 约定
 
