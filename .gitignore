@@ -35,3 +35,6 @@ desktop.ini
 *.h5
 *.pkl
 *.parquet
+
+# Claude Code runtime
+.claude/
