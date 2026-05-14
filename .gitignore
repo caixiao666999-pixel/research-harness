@@ -1,0 +1,37 @@
+# Bulky experiment artifacts — local only
+experiments/*/data/
+experiments/*/results/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.env
+.ipynb_checkpoints/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Common bulky files
+*.ckpt
+*.pt
+*.pth
+*.h5
+*.pkl
+*.parquet
