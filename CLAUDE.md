@@ -22,6 +22,38 @@
 
 **不要**主动读取历史归档的实验。AI 关注点只在最新一次实验和已沉淀的 FINDINGS。
 
+## 目录结构（权威定义）
+
+```
+.
+├── CLAUDE.md / AGENTS.md   # AI 启动指令（两份内容必须一致）
+├── METHOD.md               # 研究方法合同（append-only 修订历史）
+├── STATUS.md               # 当前阶段 / 活跃实验 / blocker
+├── FINDINGS.md             # 跨实验沉淀（append-only，user-approved）
+├── README.md
+├── .gitignore
+├── src/                    # 公共代码 —— 仅当代码被 ≥2 个实验复用才提升至此
+├── experiments/            # 所有实验
+│   └── YYYY-MM-DD-描述/    # 单次实验目录
+│       ├── plan.md         # 实验计划 + pre-registration 预测段（开跑后冻结）
+│       ├── REPORT.md       # 实验报告
+│       ├── code/           # 本次实验的代码（一次性 OK）
+│       ├── data/           # 数据（gitignored）
+│       └── results/        # 结果产物（gitignored）
+├── archive/                # 大结构改动时的旧版本归档
+├── templates/              # plan / REPORT 模板（修改属结构性改动）
+├── scripts/                # 维护脚本（不是研究代码）
+└── .githooks/              # 仓库级 git hooks（需手动启用）
+```
+
+### 文件放置铁律
+
+1. **不要静默新建顶级目录。** 如果产物找不到归属，先问用户。
+2. **临时探索性脚本 / notebook** → 放到当前活跃实验的 `code/`，不要放 `src/`
+3. **数据预处理脚本** → 仅本次实验用 → `experiments/.../code/`；跨实验被复用过才询问是否提升到 `src/`
+4. **新建实验目录** → 必须从 `templates/experiment.template/` 复制，不要手写
+5. **修改 `templates/` 本身** 属于结构性改动，需用户批准
+
 ## 阶段约定（强制）
 
 每次响应**开头必须用 `[阶段名]` 标明当前阶段**。五个合法阶段：
@@ -133,6 +165,25 @@ git config core.hooksPath .githooks
 | `experiments/*/code/` | |
 | `archive/` | |
 | `scripts/`, `.githooks/` | |
+
+## 模板使用原则
+
+模板（`plan.md` / `REPORT.md`）是**骨架**，不是**枷锁**。
+
+### 可以这样做
+- 拓展段落（在某段下补 2-3 段叙述而非只填 bullet）
+- 自创小节（若有重要观察不属于任何已列段落）
+- 标 N/A 并说明原因（若某段不适用，明确写 "N/A — 原因..."；不要硬塞内容）
+
+### 不可以这样做
+**以下是科学诚信红线，不允许跳过或敷衍**：
+- `REPORT.md` 第 4 节"预测对比" —— 必须逐项标 ✅/❌/⚠️，证伪的预测必须诚实记录
+- `REPORT.md` 第 5 节"是否为负面结果" —— 必须明确 Yes/No，禁止包装为"趋势不显著但方向正确"
+- `REPORT.md` 第 9 节"跨实验发现候选" —— 必须思考是否揭示规律（即使最终写"无"）
+- `REPORT.md` 第 10 节"复现配方" —— seed / 版本 / 数据来源必须可查
+- `plan.md` "实验前预测" —— 开跑后禁止修改
+
+其他段落可以灵活处理。**诚实优先于结构**。
 
 ## 你的角色定位
 
